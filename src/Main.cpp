@@ -6,17 +6,19 @@
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES);
 
-float rAmount = 1.0f; 		// RGB Multipliers to change colors
+constexpr int maxThreads = 8;	// Max amount of threads to use for Fractal function
+
+float rAmount = 1.0f; 			// RGB Multipliers to change colors
 float bAmount = 0.2f;
 float gAmount = 0.2f;
-bool singleColor = true;	// Use single color or Colorize formula
+bool singleColor = true;		// Use single color or Colorize formula
 
-float frames;	  // To store FramesPerSecond
-int hudCount = 0; // To count loops for hud
+float frames;	  				// To store FramesPerSecond
+int hudCount = 0; 				// To count loops for hud
 
-double offsetX = 0.0; // Used for Panning
+double offsetX = 0.0; 			// Used for Panning
 double offsetY = 0.0;
-double zmx1 = WIN_WIDTH / 4; // Used for Zooming
+double zmx1 = WIN_WIDTH / 4; 	// Used for Zooming
 double zmx2 = 2;
 double zmy1 = WIN_HEIGHT / 4;
 double zmy2 = 2;
@@ -27,7 +29,8 @@ int maxiterations = 128;
 
 double ReMap(double value, double istart, double istop, double ostart, double ostop);
 void InitVertexArray();
-void CalculateFractal();
+void CalculateFractal(int start, int end);
+void CreateFractalThreads();
 
 double ReMap(double value, double istart, double istop, double ostart, double ostop)
 {
@@ -46,11 +49,11 @@ void InitVertexArray()
 	}
 }
 
-void CalculateFractal()
+void CalculateFractal(int start, int end)
 {
 	for (int y = 0; y < WIN_HEIGHT; y++)
 	{
-		for (int x = 0; x < WIN_WIDTH; x++)
+		for (int x = start; x < end; x++)
 		{
 			double a = (x + offsetX) / zmx1 - zmx2; // X with Pan and Zoom;
 			double b = zmy2 - (y + offsetY) / zmy1; // Y with Pan and Zoom;
@@ -101,10 +104,27 @@ void CalculateFractal()
 	}
 }
 
+void CreateFractalThreads(){
+	std::thread t[maxThreads];
+	int sectionWidth = WIN_WIDTH/maxThreads;
+	int start, end;
+
+	for(size_t i=0; i<maxThreads; i++){
+		start 	= i * sectionWidth;
+		end		= (i+1) * sectionWidth;
+
+		t[i] = std::thread(CalculateFractal, start, end);
+	}
+
+	for(size_t i=0; i<maxThreads; i++)
+		t[i].join();
+}
+
 int main()
 {
 	// Create a non resizable window
 	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "RaZ Mandelbrot", sf::Style::Titlebar | sf::Style::Close);
+	window.setFramerateLimit(60);
 
 	sf::Vector2i mousePos;
 	InitHud();
@@ -210,7 +230,8 @@ int main()
 		// Draw
 		window.clear();
 
-		CalculateFractal();
+		CreateFractalThreads();				// Using threads
+		//CalculateFractal(0, WIN_WIDTH); 	// No threads
 
 		window.draw(vertexarrayPoints, sf::BlendAdd);
 		DrawHud(&window);
