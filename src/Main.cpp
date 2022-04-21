@@ -6,9 +6,10 @@
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES);
 
-float rAmount = 1.0f; // RGB Multipliers to change colors
+float rAmount = 1.0f; 		// RGB Multipliers to change colors
 float bAmount = 0.2f;
 float gAmount = 0.2f;
+bool singleColor = true;	// Use single color or Colorize formula
 
 float frames;	  // To store FramesPerSecond
 int hudCount = 0; // To count loops for hud
@@ -89,7 +90,12 @@ void CalculateFractal()
 			{
 				double brightness = ReMap(convergeNumber, 0, maxiterations, 0, 1);
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
-				vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
+				if(singleColor)
+					vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
+				else
+					vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(	(sf::Uint8)(sin(0.016 * brightness + 4) * 230 + 25),
+																			(sf::Uint8)(sin(0.013 * brightness + 2) * 230 + 25),
+																			(sf::Uint8)(sin(0.01 * brightness + 1) * 230 + 25), 255);
 			}
 		}
 	}
@@ -134,13 +140,15 @@ int main()
 					offsetX -= 10;
 				if (event.key.code == sf::Keyboard::Key::Right)
 					offsetX += 10;
+				if (event.key.code == sf::Keyboard::Key::C)
+					singleColor = !singleColor;
 				if (event.key.code == sf::Keyboard::Key::PageUp)
 				{
-					maxiterations = maxiterations + 32;
+					maxiterations += 32;
 				}
 				if (event.key.code == sf::Keyboard::Key::PageDown)
 				{
-					maxiterations = maxiterations - 32;
+					maxiterations -= 32;
 					if (maxiterations < 32)
 						maxiterations = 32;
 				}
