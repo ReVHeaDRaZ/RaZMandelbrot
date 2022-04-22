@@ -6,19 +6,19 @@
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES);
 
-constexpr int maxThreads = 8;	// Max amount of threads to use for Fractal function
+constexpr int maxThreads = 8; // Max amount of threads to use for Fractal function
 
-float rAmount = 1.0f; 			// RGB Multipliers to change colors
+float rAmount = 1.0f; // RGB Multipliers to change colors
 float bAmount = 0.2f;
 float gAmount = 0.2f;
-bool singleColor = true;		// Use single color or Colorize formula
+int colorMethod = 0; // For Selecting method of colorization
 
-float frames;	  				// To store FramesPerSecond
-int hudCount = 0; 				// To count loops for hud
+float frames;	  // To store FramesPerSecond
+int hudCount = 0; // To count loops for hud
 
-double offsetX = 0.0; 			// Used for Panning
+double offsetX = 0.0; // Used for Panning
 double offsetY = 0.0;
-double zmx1 = WIN_WIDTH / 4; 	// Used for Zooming
+double zmx1 = WIN_WIDTH / 4; // Used for Zooming
 double zmx2 = 2;
 double zmy1 = WIN_HEIGHT / 4;
 double zmy2 = 2;
@@ -27,8 +27,11 @@ bool zoomIn = false;
 bool zoomOut = false;
 int maxiterations = 128;
 
+std::vector<sf::Color> palette;
+
 double ReMap(double value, double istart, double istop, double ostart, double ostop);
 void InitVertexArray();
+void CreatePalette16();
 void CalculateFractal(int start, int end);
 void CreateFractalThreads();
 
@@ -47,6 +50,26 @@ void InitVertexArray()
 			vertexarrayPoints[x + y * WIN_WIDTH].position.y = y;
 		}
 	}
+}
+
+void CreatePalette16()
+{
+	palette.push_back(sf::Color(66, 30, 15));	 // Brown
+	palette.push_back(sf::Color(25, 7, 26));	 // Dark Violet
+	palette.push_back(sf::Color(9, 1, 47));		 // Dark Blue
+	palette.push_back(sf::Color(4, 4, 73));		 // Blue 5
+	palette.push_back(sf::Color(0, 7, 73));		 // Blue 4
+	palette.push_back(sf::Color(12, 44, 138));	 // Blue 3
+	palette.push_back(sf::Color(24, 82, 177));	 // Blue 2
+	palette.push_back(sf::Color(57, 125, 209));	 // Blue 1
+	palette.push_back(sf::Color(134, 181, 229)); // Blue 0
+	palette.push_back(sf::Color(211, 236, 248)); // Lightest Blue
+	palette.push_back(sf::Color(241, 233, 191)); // Lightest Yellow
+	palette.push_back(sf::Color(248, 201, 95));	 // Light Yellow
+	palette.push_back(sf::Color(255, 170, 0));	 // Dirty Yellow
+	palette.push_back(sf::Color(204, 128, 0));	 // Brown 0
+	palette.push_back(sf::Color(153, 87, 0));	 // Brown 1
+	palette.push_back(sf::Color(106, 52, 3));	 // Brown 2
 }
 
 void CalculateFractal(int start, int end)
@@ -93,30 +116,44 @@ void CalculateFractal(int start, int end)
 			{
 				double brightness = ReMap(convergeNumber, 0, maxiterations, 0, 1);
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
-				if(singleColor)
-					vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
-				else
-					vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(	(sf::Uint8)(sin(0.016 * brightness + 4) * 230 + 25),
-																			(sf::Uint8)(sin(0.013 * brightness + 2) * 230 + 25),
-																			(sf::Uint8)(sin(0.01 * brightness + 1) * 230 + 25), 255);
+				switch (colorMethod)
+				{
+					case 0:
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
+						break;
+					case 1:
+						vertexarrayPoints[x + y * WIN_WIDTH].color = palette[(int)brightness % 16];
+						break;
+					case 2:
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.016 * brightness + 4) * 230 + 25),
+							(sf::Uint8)(sin(0.013 * brightness + 2) * 230 + 25),
+							(sf::Uint8)(sin(0.01 * brightness + 1) * 230 + 25),
+							255);
+						break;
+					default:
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
+						break;
+				}
 			}
 		}
 	}
 }
 
-void CreateFractalThreads(){
+void CreateFractalThreads()
+{
 	std::thread t[maxThreads];
-	int sectionWidth = WIN_WIDTH/maxThreads;
+	int sectionWidth = WIN_WIDTH / maxThreads;
 	int start, end;
 
-	for(size_t i=0; i<maxThreads; i++){
-		start 	= i * sectionWidth;
-		end		= (i+1) * sectionWidth;
+	for (size_t i = 0; i < maxThreads; i++)
+	{
+		start = i * sectionWidth;
+		end = (i + 1) * sectionWidth;
 
 		t[i] = std::thread(CalculateFractal, start, end);
 	}
 
-	for(size_t i=0; i<maxThreads; i++)
+	for (size_t i = 0; i < maxThreads; i++)
 		t[i].join();
 }
 
@@ -129,6 +166,7 @@ int main()
 	sf::Vector2i mousePos;
 	InitHud();
 	InitVertexArray();
+	CreatePalette16();
 
 	// Use a timer to obtain the time elapsed
 	sf::Clock clk;
@@ -161,7 +199,11 @@ int main()
 				if (event.key.code == sf::Keyboard::Key::Right)
 					offsetX += 10;
 				if (event.key.code == sf::Keyboard::Key::C)
-					singleColor = !singleColor;
+				{
+					colorMethod++;
+					if (colorMethod > 2)
+						colorMethod = 0;
+				}
 				if (event.key.code == sf::Keyboard::Key::PageUp)
 				{
 					maxiterations += 32;
@@ -230,7 +272,7 @@ int main()
 		// Draw
 		window.clear();
 
-		CreateFractalThreads();				// Using threads
+		CreateFractalThreads(); // Using threads
 		//CalculateFractal(0, WIN_WIDTH); 	// No threads
 
 		window.draw(vertexarrayPoints, sf::BlendAdd);
