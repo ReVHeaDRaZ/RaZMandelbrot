@@ -1,4 +1,5 @@
 #include "Hud.h"
+#include "ColorConvert.h"
 
 #define WIN_WIDTH 800
 #define WIN_HEIGHT 600
@@ -130,6 +131,15 @@ void CalculateFractal(int start, int end)
 							(sf::Uint8)(sin(0.01 * brightness + 1) * 230 + 25),
 							255);
 						break;
+					case 3:
+						HsvColor hsv;
+						RgbColor rgb;
+						hsv.h = brightness;
+						hsv.s = 255;
+						hsv.v = 255;
+						rgb = HsvToRgb(hsv);
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(rgb.r, rgb.g, rgb.b, 255);
+						break;
 					default:
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
@@ -201,7 +211,7 @@ int main()
 				if (event.key.code == sf::Keyboard::Key::C)
 				{
 					colorMethod++;
-					if (colorMethod > 2)
+					if (colorMethod > 3)
 						colorMethod = 0;
 				}
 				if (event.key.code == sf::Keyboard::Key::PageUp)
@@ -247,8 +257,8 @@ int main()
 		if (zoomIn && !zoomOut)
 		{
 			mousePos = sf::Mouse::getPosition(window); // Get Mouse pos
-			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2))*0.1;
-			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2))*0.1;
+			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2)) * 0.1;
+			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2)) * 0.1;
 			zmx1 = zmx1 * zmAmount;
 			zmx2 = zmx2 * (1 / zmAmount);
 			zmy1 = zmy1 * zmAmount;
@@ -259,8 +269,8 @@ int main()
 		if (zoomOut && !zoomIn)
 		{
 			mousePos = sf::Mouse::getPosition(window); // Get Mouse pos
-			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2))*0.1;
-			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2))*0.1;
+			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2)) * 0.1;
+			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2)) * 0.1;
 			zmx1 = zmx1 / zmAmount;
 			zmx2 = zmx2 / (1 / zmAmount);
 			zmy1 = zmy1 / zmAmount;
