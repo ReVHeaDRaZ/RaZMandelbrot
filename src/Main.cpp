@@ -174,6 +174,13 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "RaZ Mandelbrot", sf::Style::Titlebar | sf::Style::Close);
 	window.setFramerateLimit(60);
 
+	// Create Texture for screenshots
+	sf::Texture screenshotTexture;
+	screenshotTexture.create(window.getSize().x, window.getSize().y);
+	std::string filename = "MandelScreen_";
+	int screenshotNumber = 0;
+	bool takeScreenshot = false;
+
 	sf::Vector2i mousePos;
 	InitHud();
 	InitVertexArray();
@@ -221,6 +228,10 @@ int main()
 					bAmount -= 0.1f;
 				if (event.key.code == sf::Keyboard::Key::N)
 					bAmount += 0.1f;
+				if (event.key.code == sf::Keyboard::Key::S)
+				{
+					takeScreenshot = true;
+				}
 				if (event.key.code == sf::Keyboard::Key::C)
 				{
 					colorMethod++;
@@ -299,7 +310,13 @@ int main()
 		//CalculateFractal(0, WIN_WIDTH); 	// No threads
 
 		window.draw(vertexarrayPoints, sf::BlendAdd);
-		DrawHud(&window);
+		if(takeScreenshot){
+			screenshotTexture.update(window);
+			screenshotTexture.copyToImage().saveToFile(filename+to_string(screenshotNumber)+".png");
+			screenshotNumber++;
+			takeScreenshot = false;
+		}else
+			DrawHud(&window);
 
 		window.display();
 
