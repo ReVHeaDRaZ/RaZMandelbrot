@@ -247,8 +247,8 @@ int main()
 		if (zoomIn && !zoomOut)
 		{
 			mousePos = sf::Mouse::getPosition(window); // Get Mouse pos
-			offsetX = offsetX + (double)mousePos.x - (WIN_WIDTH / 2);
-			offsetY = offsetY + (double)mousePos.y - (WIN_HEIGHT / 2);
+			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2))*0.1;
+			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2))*0.1;
 			zmx1 = zmx1 * zmAmount;
 			zmx2 = zmx2 * (1 / zmAmount);
 			zmy1 = zmy1 * zmAmount;
@@ -259,8 +259,8 @@ int main()
 		if (zoomOut && !zoomIn)
 		{
 			mousePos = sf::Mouse::getPosition(window); // Get Mouse pos
-			offsetX = offsetX + (double)mousePos.x - (WIN_WIDTH / 2);
-			offsetY = offsetY + (double)mousePos.y - (WIN_HEIGHT / 2);
+			offsetX = offsetX + ((double)mousePos.x - (WIN_WIDTH / 2))*0.1;
+			offsetY = offsetY + ((double)mousePos.y - (WIN_HEIGHT / 2))*0.1;
 			zmx1 = zmx1 / zmAmount;
 			zmx2 = zmx2 / (1 / zmAmount);
 			zmy1 = zmy1 / zmAmount;
