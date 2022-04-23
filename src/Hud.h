@@ -2,6 +2,9 @@
 
 sf::Text heading, currentIterations, hudFrames;
 sf::Font font;
+float frames;	  // To store FramesPerSecond
+int hudCount = 0; // To count loops for hud
+
 
 template <typename T>
 //function to convert a non-string variable to a string.
