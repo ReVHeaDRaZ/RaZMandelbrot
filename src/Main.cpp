@@ -7,19 +7,20 @@
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES);
 
-constexpr int maxThreads = 8; // Max amount of threads to use for Fractal function
+constexpr int maxThreads = 8; 	// Max amount of threads to use for Fractal function
 
-float rAmount = 1.0f; // RGB Multipliers to change colors
-float bAmount = 0.2f;
+sf::Color interiorColor = sf::Color::Black;
+float rAmount = 1.0f; 			// RGB Multipliers to change colors
 float gAmount = 0.2f;
-int colorMethod = 0; // For Selecting method of colorization
+float bAmount = 0.2f;
+int colorMethod = 0; 			// For Selecting method of colorization
 
-float frames;	  // To store FramesPerSecond
-int hudCount = 0; // To count loops for hud
+float frames;	  				// To store FramesPerSecond
+int hudCount = 0; 				// To count loops for hud
 
-double offsetX = 0.0; // Used for Panning
+double offsetX = 0.0; 			// Used for Panning
 double offsetY = 0.0;
-double zmx1 = WIN_WIDTH / 4; // Used for Zooming
+double zmx1 = WIN_WIDTH / 4; 	// Used for Zooming
 double zmx2 = 2;
 double zmy1 = WIN_HEIGHT / 4;
 double zmy2 = 2;
@@ -111,7 +112,7 @@ void CalculateFractal(int start, int end)
 			// If we never got there, pick the color black
 			if (n == maxiterations)
 			{
-				vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color::Black;
+				vertexarrayPoints[x + y * WIN_WIDTH].color = interiorColor;
 			}
 			else
 			{
@@ -119,19 +120,19 @@ void CalculateFractal(int start, int end)
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
 				switch (colorMethod)
 				{
-					case 0:
+					case 0: // Single Color
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
-					case 1:
+					case 1:	// Palette
 						vertexarrayPoints[x + y * WIN_WIDTH].color = palette[(int)brightness % 16];
 						break;
-					case 2:
+					case 2:	// Smooth Color
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.016 * brightness + 4) * 230 + 25),
 							(sf::Uint8)(sin(0.013 * brightness + 2) * 230 + 25),
 							(sf::Uint8)(sin(0.01 * brightness + 1) * 230 + 25),
 							255);
 						break;
-					case 3:
+					case 3:	// HSV
 						HsvColor hsv;
 						RgbColor rgb;
 						hsv.h = brightness;
@@ -140,7 +141,7 @@ void CalculateFractal(int start, int end)
 						rgb = HsvToRgb(hsv);
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(rgb.r, rgb.g, rgb.b, 255);
 						break;
-					default:
+					default: // Default to Single color method
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
 				}
@@ -208,6 +209,18 @@ int main()
 					offsetX -= 10;
 				if (event.key.code == sf::Keyboard::Key::Right)
 					offsetX += 10;
+				if (event.key.code == sf::Keyboard::Key::R)
+					rAmount -= 0.1f;
+				if (event.key.code == sf::Keyboard::Key::T)
+					rAmount += 0.1f;
+				if (event.key.code == sf::Keyboard::Key::G)
+					gAmount -= 0.1f;
+				if (event.key.code == sf::Keyboard::Key::H)
+					gAmount += 0.1f;
+				if (event.key.code == sf::Keyboard::Key::B)
+					bAmount -= 0.1f;
+				if (event.key.code == sf::Keyboard::Key::N)
+					bAmount += 0.1f;
 				if (event.key.code == sf::Keyboard::Key::C)
 				{
 					colorMethod++;
@@ -296,7 +309,7 @@ int main()
 
 		// Update Hud values
 		hudCount++;
-		if (hudCount >= 50)
+		if (hudCount >= 30)
 		{
 			currentIterations.setString(to_string(maxiterations));
 			hudFrames.setString(to_string(frames));

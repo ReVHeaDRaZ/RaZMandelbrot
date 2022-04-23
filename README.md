@@ -12,3 +12,6 @@ A simple mandelbrot viewer with pan and zoom using SFML
 | <b>LEFT and RIGHT-</b> | PAN LEFT and RIGHT |
 | <b>PAGEUP and PAGEDOWN-</b> | Change amount of Iterations |
 | <b>C-</b> | Change Color Method |
+| <b>R and T-</b> | Change Single Color Red Amount -/+ |
+| <b>G and H-</b> | Change Single Color Green Amount -/+ |
+| <b>B and N-</b> | Change Single Color Blue Amount -/+ |
