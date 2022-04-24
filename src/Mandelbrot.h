@@ -91,6 +91,7 @@ void CalculateFractal(int start, int end)
 			{
 				double brightness = ReMap(convergeNumber, 0, maxiterations, 0, 1);
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
+				//double smooth = (n + 1 - log(log(absOld))/log(2))/maxiterations;
 				switch (colorMethod)
 				{
 					case 0: // Single Color
@@ -114,6 +115,15 @@ void CalculateFractal(int start, int end)
 						rgb = HsvToRgb(hsv);
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(rgb.r, rgb.g, rgb.b, 255);
 						break;
+					case 4: // Palette 2
+						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)brightness % 36];
+						break;
+					/*case 5: // Palette 2 Attempt to smooth
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color( (palette2[(int)(brightness+1) % 36].r - palette2[(int)brightness % 36].r) * smooth + palette2[(int)brightness % 36].r,
+																			(palette2[(int)(brightness+1) % 36].g - palette2[(int)brightness % 36].g) * smooth + palette2[(int)brightness % 36].g,
+																			(palette2[(int)(brightness+1) % 36].b - palette2[(int)brightness % 36].b) * smooth + palette2[(int)brightness % 36].b,255);
+						break;
+					*/
 					default: // Default to Single color method
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;

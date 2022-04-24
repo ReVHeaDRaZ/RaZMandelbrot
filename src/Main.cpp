@@ -15,7 +15,7 @@ int main()
 
 	InitHud();
 	InitVertexArray();
-	CreatePalette16();
+	CreatePalettes();
 
 	// Use a timer to obtain the time elapsed
 	sf::Clock clk;
@@ -80,7 +80,7 @@ int main()
 				if (event.key.code == sf::Keyboard::Key::C)
 				{
 					colorMethod++;
-					if (colorMethod > 3)
+					if (colorMethod > 4)
 						colorMethod = 0;
 				}
 				if (event.key.code == sf::Keyboard::Key::PageUp)
@@ -132,7 +132,7 @@ int main()
 			TakeScreenshot(window);
 			takeScreenshot = false;
 		}
-		else if(!makeVideoFrames)
+		else if (!makeVideoFrames)
 			DrawHud(&window);
 
 		window.display();
