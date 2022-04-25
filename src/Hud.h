@@ -22,15 +22,15 @@ void InitHud()
 {
 	currentIterations.setFont(font);
 	currentIterations.setFillColor(sf::Color::White);
-	currentIterations.setCharacterSize(20);
-	currentIterations.setPosition(100, 5);
+	currentIterations.setCharacterSize(15);
+	currentIterations.setPosition(80, 5);
 	currentIterations.setString(to_string(128));
 	heading = currentIterations;
 	hudFrames = currentIterations;
 
 	heading.setPosition(5, 5);
 	heading.setString("ITERATIONS\nFRAMES");
-	hudFrames.setPosition(100,25);
+	hudFrames.setPosition(80,20);
 	hudFrames.setString("0");
 
 	//load the font

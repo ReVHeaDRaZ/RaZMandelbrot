@@ -1,13 +1,69 @@
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
-#define MAX_NUM_PARTICLES (WIN_WIDTH * WIN_HEIGHT)
+uint WIN_WIDTH = 800; // Window Resolution
+uint WIN_HEIGHT = 600;
+uint MAX_NUM_PARTICLES = (WIN_WIDTH * WIN_HEIGHT);
+
 #include "Hud.h"
 #include "Mandelbrot.h"
 
-int main()
+static void show_usage(std::string name)
 {
+	std::cout << "Usage: " << name << " <option(s)> "
+			  << "Options:\n"
+			  << "\t-h\t\tShow this help message\n"
+			  << "\t-r Resolution WIDTH HEIGHT\t"
+			  << std::endl;
+}
+
+int main(int argc, char* argv[])
+{
+	//-------------Command-Line Arguments-----------------
+	// No Arguments
+	if (argc == 1)
+	{
+		WIN_WIDTH = 800;
+		WIN_HEIGHT = 600;
+	}
+	else
+	{ // Not enough arguments
+		if (argc < 3)
+		{
+			std::cout << "Usage: " << argv[0] << "-r Resolution WIDTH HEIGHT" << std::endl;
+			show_usage(argv[0]);
+			return 0;
+		}
+
+		std::string widthArg;
+		std::string heightArg;
+		for (int i = 1; i < argc; ++i)
+		{
+			std::string arg = argv[i];
+			if (arg == "-h")
+			{
+				show_usage(argv[0]);
+				return 0;
+			}
+			else if (arg == "-r")
+			{
+				if (i + 2 < argc)
+				{							// Make sure we aren't at the end of argv!
+					widthArg = argv[i + 1]; // Increment 'i' so we don't get the argument as the next argv[i].
+					heightArg = argv[i + 2];
+				}
+				else
+				{ // Uh-oh, there was not enough argument to the option.
+					std::cout << "-r option requires two arguments." << std::endl;
+					return 0;
+				}
+			}
+		}
+		WIN_WIDTH = stoi(widthArg);
+		WIN_HEIGHT = stoi(heightArg);
+		MAX_NUM_PARTICLES = (WIN_WIDTH * WIN_HEIGHT);
+		vertexarrayPoints.resize(MAX_NUM_PARTICLES);
+	}
+
 	// Create a non resizable window
-	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "RaZ Mandelbrot", sf::Style::Titlebar | sf::Style::Close);
+	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "RaZ Mandelbrot", sf::Style::Fullscreen); //sf::Style::Titlebar | sf::Style::Close);
 	window.setFramerateLimit(60);
 
 	// Create Texture for screenshots
@@ -16,6 +72,7 @@ int main()
 	InitHud();
 	InitVertexArray();
 	CreatePalettes();
+	ResetView();
 
 	// Use a timer to obtain the time elapsed
 	sf::Clock clk;
@@ -86,12 +143,14 @@ int main()
 				if (event.key.code == sf::Keyboard::Key::PageUp)
 				{
 					maxiterations += 32;
+					currentIterations.setString(to_string(maxiterations));
 				}
 				if (event.key.code == sf::Keyboard::Key::PageDown)
 				{
 					maxiterations -= 32;
 					if (maxiterations < 32)
 						maxiterations = 32;
+					currentIterations.setString(to_string(maxiterations));
 				}
 			}
 			// Mouse Pressed
@@ -145,7 +204,6 @@ int main()
 		hudCount++;
 		if (hudCount >= 30)
 		{
-			currentIterations.setString(to_string(maxiterations));
 			hudFrames.setString(to_string(frames));
 			hudCount = 0;
 		}

@@ -29,7 +29,7 @@ bool zoomOut = false;
 int maxiterations = 128;
 
 void InitVertexArray();
-void CalculateFractal(int start, int end);
+void CalculateFractal(uint start, uint end);
 void CreateFractalThreads();
 void ResetView();
 void ZoomIn(sf::Window& window);
@@ -37,9 +37,9 @@ void ZoomOut(sf::Window& window);
 
 void InitVertexArray()
 {
-	for (int y = 0; y < WIN_HEIGHT; y++)
+	for (uint y = 0; y < WIN_HEIGHT; y++)
 	{
-		for (int x = 0; x < WIN_WIDTH; x++)
+		for (uint x = 0; x < WIN_WIDTH; x++)
 		{
 			vertexarrayPoints[x + y * WIN_WIDTH].position.x = x;
 			vertexarrayPoints[x + y * WIN_WIDTH].position.y = y;
@@ -47,11 +47,11 @@ void InitVertexArray()
 	}
 }
 
-void CalculateFractal(int start, int end)
+void CalculateFractal(uint start, uint end)
 {
-	for (int y = 0; y < WIN_HEIGHT; y++)
+	for (uint y = 0; y < WIN_HEIGHT; y++)
 	{
-		for (int x = start; x < end; x++)
+		for (uint x = start; x < end; x++)
 		{
 			double a = (x + offsetX) / zmx1 - zmx2; // X with Pan and Zoom;
 			double b = zmy2 - (y + offsetY) / zmy1; // Y with Pan and Zoom;
