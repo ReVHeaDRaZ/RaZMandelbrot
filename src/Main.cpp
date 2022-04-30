@@ -171,6 +171,9 @@ int main(int argc, char* argv[])
 						maxiterations = 32;
 					currentIterations.setString(to_string(maxiterations));
 				}
+				if (event.key.code == sf::Keyboard::Key::I){
+					showControls = !showControls;
+				}
 			}
 			// Mouse Pressed
 			if (event.type == sf::Event::MouseButtonPressed)
