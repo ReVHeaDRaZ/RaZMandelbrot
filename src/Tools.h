@@ -74,6 +74,40 @@ void CreatePalettes()
 	palette2.push_back(sf::Color(255, 255, 220));
 	palette2.push_back(sf::Color(255, 255, 240));
 	palette2.push_back(sf::Color(255, 255, 255)); 	// White
+	palette2.push_back(sf::Color(255, 255, 240));
+	palette2.push_back(sf::Color(255, 255, 220));
+	palette2.push_back(sf::Color(255, 255, 200));
+	palette2.push_back(sf::Color(255, 255, 180));
+	palette2.push_back(sf::Color(255, 255, 160));
+	palette2.push_back(sf::Color(255, 255, 140));
+	palette2.push_back(sf::Color(255, 255, 120));
+	palette2.push_back(sf::Color(255, 255, 100));
+	palette2.push_back(sf::Color(255, 255, 80));
+	palette2.push_back(sf::Color(255, 255, 60));
+	palette2.push_back(sf::Color(255, 255, 40));
+	palette2.push_back(sf::Color(255, 255, 20));	 // Yellow
+	palette2.push_back(sf::Color(255, 220, 0));
+	palette2.push_back(sf::Color(255, 200, 0));
+	palette2.push_back(sf::Color(255, 180, 0));
+	palette2.push_back(sf::Color(255, 160, 0));
+	palette2.push_back(sf::Color(255, 140, 0));
+	palette2.push_back(sf::Color(255, 120, 0));	 	// Orange
+	palette2.push_back(sf::Color(255, 100, 0));
+	palette2.push_back(sf::Color(255, 80, 0));
+	palette2.push_back(sf::Color(255, 60, 0));
+	palette2.push_back(sf::Color(255, 40, 0));
+	palette2.push_back(sf::Color(255, 20, 0));		// Red
+	palette2.push_back(sf::Color(240, 0, 0));
+	palette2.push_back(sf::Color(220, 0, 0));
+	palette2.push_back(sf::Color(200, 0, 0));
+	palette2.push_back(sf::Color(180, 0, 0));
+	palette2.push_back(sf::Color(160, 0, 0));
+	palette2.push_back(sf::Color(140, 0, 0));
+	palette2.push_back(sf::Color(120, 0, 0));
+	palette2.push_back(sf::Color(100, 0, 0));
+	palette2.push_back(sf::Color(80, 0, 0));
+	palette2.push_back(sf::Color(60, 0, 0));
+	palette2.push_back(sf::Color(40, 0, 0));	 	// Dark Red
 }
 
 void TakeScreenshot(sf::Window &window){

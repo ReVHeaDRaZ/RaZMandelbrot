@@ -137,6 +137,25 @@ int main(int argc, char* argv[])
 				if (event.key.code == sf::Keyboard::Key::C)
 				{
 					colorMethod++;
+					switch(colorMethod){
+						case 0:
+							colorMeth.setString("SINGLE");
+							break;
+						case 1:
+							colorMeth.setString("PALETTE");
+							break;
+						case 2:
+							colorMeth.setString("SMOOTH");
+							break;
+						case 3:
+							colorMeth.setString("HUE");
+							break;
+						case 4:
+							colorMeth.setString("FIRE PALETTE");
+							break;
+						default:
+							colorMeth.setString("SINGLE");
+					}
 					if (colorMethod > 4)
 						colorMethod = 0;
 				}
