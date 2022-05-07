@@ -11,6 +11,7 @@ std::vector<sf::Color> palette, palette2;	// For Palette method of Coloring mand
 
 double ReMap(double value, double istart, double istop, double ostart, double ostop);
 void CreatePalettes();
+sf::Color LerpColor(const sf::Color& v, const sf::Color& u, double a);
 void TakeScreenshot(sf::Window &window);
 
 
@@ -109,6 +110,15 @@ void CreatePalettes()
 	palette2.push_back(sf::Color(60, 0, 0));
 	palette2.push_back(sf::Color(40, 0, 0));	 	// Dark Red
 }
+
+// computes v + t(u - v)
+// t should be a value between 0 and 1
+sf::Color LerpColor(const sf::Color& v, const sf::Color& u, double a)
+{
+	auto const b = 1 - a;
+	return sf::Color(b*v.r + a * u.r, b*v.g + a * u.g, b*v.b + a * u.b);
+}
+
 
 void TakeScreenshot(sf::Window &window){
 	screenshotTexture.update(window);

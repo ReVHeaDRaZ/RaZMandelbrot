@@ -85,7 +85,8 @@
 		"streambuf": "cpp",
 		"thread": "cpp",
 		"typeinfo": "cpp",
-		"variant": "cpp"
+		"variant": "cpp",
+		"complex": "cpp"
 	},
 	"terminal.integrated.automationShell.windows": "C:/Program Files/Git/bin/bash.exe",
 	"terminal.integrated.env.windows": {

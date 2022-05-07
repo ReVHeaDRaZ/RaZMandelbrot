@@ -1,6 +1,7 @@
 #pragma once
 #include "ColorConvert.h"
 #include "Tools.h"
+#include <complex>
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES); // To store calculated pixels
 sf::Vector2i mousePos;											  // To store mouse position
@@ -71,6 +72,9 @@ void CalculateFractal(uint start, uint end)
 			double n = 0;
 			double absOld = 0.0;
 			double convergeNumber = maxiterations; // Changes if the while loop breaks due to non-convergence
+			std::complex<double> der(1.0,1.0); 		// To store derivative
+			std::complex<double> z(ca,cb);			// To store complex z
+			bool inside=false;
 
 			while (n < maxiterations)
 			{
@@ -79,6 +83,15 @@ void CalculateFractal(uint start, uint end)
 				double abs = sqrt(a * a + b * b);
 				a = aa + ca;
 				b = bb + cb;
+
+				der = der*2.0*z;
+				z = std::complex<double>(a,b);
+
+				if(sqrt(der.real()*der.real()+der.imag()*der.imag()) < eps*eps){
+					n = maxiterations;
+					inside=true;
+					break;
+				}
 
 				if (abs > 4)
 				{
@@ -96,6 +109,9 @@ void CalculateFractal(uint start, uint end)
 			// If we never got there, pick the interiorColor
 			if (n == maxiterations)
 			{
+				if(inside)
+					vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(interiorColor.r*0.5,interiorColor.g*0.5,interiorColor.b*0.5,255);
+				else
 				vertexarrayPoints[x + y * WIN_WIDTH].color = interiorColor;
 			}
 			else

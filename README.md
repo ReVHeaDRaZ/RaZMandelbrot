@@ -1,5 +1,5 @@
 # RaZMandelbrot
-A simple mandelbrot viewer with pan and zoom using SFML
+A mandelbrot viewer using SFML with pan and zoom, different Coloring Methods, and Interior Detection
 
 # Controls
 
@@ -16,5 +16,7 @@ A simple mandelbrot viewer with pan and zoom using SFML
 | <b>G and H-</b> | Change Single Color Green Amount -/+ |
 | <b>B and N-</b> | Change Single Color Blue Amount -/+ |
 | <b>< and >-</b> | Change Mandelbrot Interior Hue -/+ |
+| <b>A-</b> | Animate Color Method |
 | <b>S-</b> | Take a Screenshot |
 | <b>V-</b> | Make Video Frames(Take a Screenshot on each zoom frame) |
+| <b>I-</b> | Show Controls |
