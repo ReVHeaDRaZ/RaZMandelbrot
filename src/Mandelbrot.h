@@ -12,6 +12,9 @@ unsigned char interiorHue = 0;
 HsvColor bhsv = { 255, 255, 100 };
 RgbColor brgb;
 
+sf::Clock colortimer;			// Use a timer for animated color method
+bool animated = false;
+
 float rAmount = 1.0f; // RGB Multipliers to change colors
 float gAmount = 0.2f;
 float bAmount = 0.2f;
@@ -27,6 +30,9 @@ double zmAmount = 1.1;
 bool zoomIn = false;
 bool zoomOut = false;
 int maxiterations = 128;
+
+const double escapeRadius=10.0;
+const double eps=0.001;
 
 void InitVertexArray();
 void CalculateFractal(uint start, uint end);
@@ -49,6 +55,11 @@ void InitVertexArray()
 
 void CalculateFractal(uint start, uint end)
 {
+	// Store colortimer value to animate color methods
+	float colortime = 0.f;
+	if(animated)
+		colortime = colortimer.getElapsedTime().asSeconds();
+
 	for (uint y = 0; y < WIN_HEIGHT; y++)
 	{
 		for (uint x = start; x < end; x++)
@@ -98,30 +109,31 @@ void CalculateFractal(uint start, uint end)
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
 					case 1: // Palette
-						vertexarrayPoints[x + y * WIN_WIDTH].color = palette[(int)brightness % 16];
+						vertexarrayPoints[x + y * WIN_WIDTH].color = palette[(int)(brightness + colortime) % 16];
 						break;
 					case 2: // Smooth Color
-						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.3 * brightness + 0) * 127 + 127),
-																				(sf::Uint8)(sin(0.3 * brightness + 2) * 127 + 127),
-																				(sf::Uint8)(sin(0.3 * brightness + 4) * 127 + 127),
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.3 * brightness + 0 + colortime) * 127 + 127),
+																				(sf::Uint8)(sin(0.3 * brightness + 2 + colortime) * 127 + 127),
+																				(sf::Uint8)(sin(0.3 * brightness + 4 + colortime) * 127 + 127),
 																				255);
 						break;
 					case 3: // HSV
 						HsvColor hsv;
 						RgbColor rgb;
-						hsv.h = brightness;
+						hsv.h = int(brightness + colortime) % 255;
 						hsv.s = 255;
 						hsv.v = 255;
 						rgb = HsvToRgb(hsv);
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(rgb.r, rgb.g, rgb.b, 255);
 						break;
 					case 4: // Palette 2
-						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)brightness % 70];
+						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)(brightness + colortime) % 70];
 						break;
-					/*case 5: // Palette 2 Attempt to smooth
-						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color( (palette2[(int)(brightness+1) % 36].r - palette2[(int)brightness % 36].r) * smooth + palette2[(int)brightness % 36].r,
-																			(palette2[(int)(brightness+1) % 36].g - palette2[(int)brightness % 36].g) * smooth + palette2[(int)brightness % 36].g,
-																			(palette2[(int)(brightness+1) % 36].b - palette2[(int)brightness % 36].b) * smooth + palette2[(int)brightness % 36].b,255);
+					/*case 5: // Animated Smooth Color
+						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.3 * brightness + 0 + colortime) * 127 + 127),
+																				(sf::Uint8)(sin(0.3 * brightness + 2 + colortime) * 127 + 127),
+																				(sf::Uint8)(sin(0.3 * brightness + 4 + colortime) * 127 + 127),
+																				255);
 						break;
 					*/
 					default: // Default to Single color method
@@ -162,6 +174,7 @@ void ResetView()
 	zmAmount = 1.1;
 	zoomIn = false;
 	zoomOut = false;
+	colortimer.restart();
 }
 
 void ZoomIn(sf::Window& window)

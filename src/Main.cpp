@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
 	sf::Clock clk;
 	clk.restart();
 
+
 	// Main loop
 	while (window.isOpen())
 	{
@@ -171,9 +172,10 @@ int main(int argc, char* argv[])
 						maxiterations = 32;
 					currentIterations.setString(to_string(maxiterations));
 				}
-				if (event.key.code == sf::Keyboard::Key::I){
+				if (event.key.code == sf::Keyboard::Key::I)
 					showControls = !showControls;
-				}
+				if (event.key.code == sf::Keyboard::Key::A)
+					animated = !animated;
 			}
 			// Mouse Pressed
 			if (event.type == sf::Event::MouseButtonPressed)
