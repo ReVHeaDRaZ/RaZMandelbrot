@@ -154,10 +154,13 @@ int main(int argc, char* argv[])
 						case 4:
 							colorMeth.setString("FIRE PALETTE");
 							break;
+						case 5:
+							colorMeth.setString("NORMAL MAP");
+							break;
 						default:
 							colorMeth.setString("SINGLE");
 					}
-					if (colorMethod > 4)
+					if (colorMethod > 5)
 						colorMethod = 0;
 				}
 				if (event.key.code == sf::Keyboard::Key::PageUp)

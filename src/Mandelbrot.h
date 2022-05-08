@@ -32,8 +32,17 @@ bool zoomIn = false;
 bool zoomOut = false;
 int maxiterations = 128;
 
-const double escapeRadius=10.0;
-const double eps=0.001;
+const double escapeRadius = 4.0;
+const double eps = 0.001;
+
+// Normal Mapping variables
+const double doublepi = 3.141592653589793238;
+const double h2 = 1.5; 		// Height Factor of incoming light
+const double angle = 90.0; 	// Angle of incoming light
+const std::complex<double> complexi(0, 1);
+std::complex<double> u;
+std::complex<double> v = exp(complexi*angle*2.0*doublepi/360.0);
+double t = 0.0;				// To store normal map lerp value
 
 void InitVertexArray();
 void CalculateFractal(uint start, uint end);
@@ -93,7 +102,7 @@ void CalculateFractal(uint start, uint end)
 					break;
 				}
 
-				if (abs > 4)
+				if (abs > escapeRadius)
 				{
 					// Measure how much we exceeded the maximum
 					double diffToLast = abs - absOld;
@@ -119,6 +128,8 @@ void CalculateFractal(uint start, uint end)
 				double brightness = ReMap(convergeNumber, 0, maxiterations, 0, 1);
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
 				//double smooth = (n + 2 - log(log(absOld))/log(2));
+				u = z/der;
+
 				switch (colorMethod)
 				{
 					case 0: // Single Color
@@ -145,13 +156,13 @@ void CalculateFractal(uint start, uint end)
 					case 4: // Palette 2
 						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)(brightness + colortime) % 70];
 						break;
-					/*case 5: // Animated Smooth Color
-						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.3 * brightness + 0 + colortime) * 127 + 127),
-																				(sf::Uint8)(sin(0.3 * brightness + 2 + colortime) * 127 + 127),
-																				(sf::Uint8)(sin(0.3 * brightness + 4 + colortime) * 127 + 127),
-																				255);
+					case 5: // Normal Map
+						u = u/abs(u);
+						t = u.real()*v.real() + u.imag()*v.imag() + h2;
+						t = t/(1+h2);
+						if(t<0) t=0;
+						vertexarrayPoints[x + y * WIN_WIDTH].color = LerpColor(sf::Color::Black,sf::Color::White,t);
 						break;
-					*/
 					default: // Default to Single color method
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
