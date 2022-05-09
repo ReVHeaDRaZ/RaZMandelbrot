@@ -2,6 +2,7 @@
 #include "ColorConvert.h"
 #include "Tools.h"
 #include <complex>
+#include <algorithm>
 
 sf::VertexArray vertexarrayPoints(sf::Points, MAX_NUM_PARTICLES); // To store calculated pixels
 sf::Vector2i mousePos;											  // To store mouse position
@@ -37,12 +38,13 @@ const double eps = 0.001;
 
 // Normal Mapping variables
 const double doublepi = 3.141592653589793238;
-const double h2 = 1.5; 		// Height Factor of incoming light
-const double angle = 90.0; 	// Angle of incoming light
+double lightHeight = 1.6; 		// Height Factor of incoming light
+double angle = 45.0; 	// Angle of incoming light
 const std::complex<double> complexi(0, 1);
 std::complex<double> u;
 std::complex<double> v = exp(complexi*angle*2.0*doublepi/360.0);
 double t = 0.0;				// To store normal map lerp value
+bool normalMap = false;
 
 void InitVertexArray();
 void CalculateFractal(uint start, uint end);
@@ -76,32 +78,34 @@ void CalculateFractal(uint start, uint end)
 		{
 			double a = (x + offsetX) / zmx1 - zmx2; // X with Pan and Zoom;
 			double b = zmy2 - (y + offsetY) / zmy1; // Y with Pan and Zoom;
-			double ca = a;
+			double ca = a;							// Store Constant a and b
 			double cb = b;
-			double n = 0;
+			double n = 0;							// To storing Iterations
 			double absOld = 0.0;
-			double convergeNumber = maxiterations; // Changes if the while loop breaks due to non-convergence
+			double convergeNumber = maxiterations; 	// Changes if the while loop breaks due to non-convergence
 			std::complex<double> der(1.0,1.0); 		// To store derivative
 			std::complex<double> z(ca,cb);			// To store complex z
 			bool inside=false;
 
 			while (n < maxiterations)
 			{
+				// z2 + c
 				double aa = a * a - b * b;
 				double bb = 2 * a * b;
 				double abs = sqrt(a * a + b * b);
 				a = aa + ca;
 				b = bb + cb;
 
+				// Interior Detection
 				der = der*2.0*z;
 				z = std::complex<double>(a,b);
-
 				if(sqrt(der.real()*der.real()+der.imag()*der.imag()) < eps*eps){
 					n = maxiterations;
 					inside=true;
 					break;
 				}
 
+				// Outside of set
 				if (abs > escapeRadius)
 				{
 					// Measure how much we exceeded the maximum
@@ -125,10 +129,11 @@ void CalculateFractal(uint start, uint end)
 			}
 			else
 			{
+				// Map convergence to smooth brightness
 				double brightness = ReMap(convergeNumber, 0, maxiterations, 0, 1);
 				brightness = ReMap(sqrt(brightness), 0, 1, 0, 255);
-				//double smooth = (n + 2 - log(log(absOld))/log(2));
-				u = z/der;
+				//double smooth = (n + 2 - log(log(absOld))/log(2.0));
+				//double smooth = n+2 - log(log(z.real()*z.real()+z.imag()*z.imag()))/log(2.0);
 
 				switch (colorMethod)
 				{
@@ -138,7 +143,7 @@ void CalculateFractal(uint start, uint end)
 					case 1: // Palette
 						vertexarrayPoints[x + y * WIN_WIDTH].color = palette[(int)(brightness + colortime) % 16];
 						break;
-					case 2: // Smooth Color
+					case 2: // Smooth Color with sine
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color((sf::Uint8)(sin(0.3 * brightness + 0 + colortime) * 127 + 127),
 																				(sf::Uint8)(sin(0.3 * brightness + 2 + colortime) * 127 + 127),
 																				(sf::Uint8)(sin(0.3 * brightness + 4 + colortime) * 127 + 127),
@@ -153,19 +158,25 @@ void CalculateFractal(uint start, uint end)
 						rgb = HsvToRgb(hsv);
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(rgb.r, rgb.g, rgb.b, 255);
 						break;
-					case 4: // Palette 2
-						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)(brightness + colortime) % 70];
-						break;
-					case 5: // Normal Map
-						u = u/abs(u);
-						t = u.real()*v.real() + u.imag()*v.imag() + h2;
-						t = t/(1+h2);
-						if(t<0) t=0;
-						vertexarrayPoints[x + y * WIN_WIDTH].color = LerpColor(sf::Color::Black,sf::Color::White,t);
+					case 4: // Palette 2 Fire
+						vertexarrayPoints[x + y * WIN_WIDTH].color = palette2[(int)(brightness + colortime) % 69];
 						break;
 					default: // Default to Single color method
 						vertexarrayPoints[x + y * WIN_WIDTH].color = sf::Color(brightness * rAmount, brightness * gAmount, brightness * bAmount, 255);
 						break;
+				}
+
+				// Normal Map
+				if(normalMap){
+					u = z/der;
+					u = u/abs(u);
+					t = u.real()*v.real() + u.imag()*v.imag() + lightHeight;
+					t = t/(1+lightHeight);
+					if(t<0) t=0;
+					if(colorMethod==0)	// Single Color NormalMap
+						vertexarrayPoints[x + y * WIN_WIDTH].color = LerpColor(sf::Color::Black,sf::Color(rAmount*255,gAmount*255,bAmount*255,255),t);
+					else
+						vertexarrayPoints[x + y * WIN_WIDTH].color = LerpColor(sf::Color::Black,vertexarrayPoints[x + y * WIN_WIDTH].color,t);
 				}
 			}
 		}

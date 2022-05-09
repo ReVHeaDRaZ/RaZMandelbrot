@@ -105,18 +105,30 @@ int main(int argc, char* argv[])
 					offsetX -= 10;
 				if (event.key.code == sf::Keyboard::Key::Right)
 					offsetX += 10;
-				if (event.key.code == sf::Keyboard::Key::R)
-					rAmount -= 0.1f;
-				if (event.key.code == sf::Keyboard::Key::T)
-					rAmount += 0.1f;
-				if (event.key.code == sf::Keyboard::Key::G)
-					gAmount -= 0.1f;
-				if (event.key.code == sf::Keyboard::Key::H)
-					gAmount += 0.1f;
-				if (event.key.code == sf::Keyboard::Key::B)
-					bAmount -= 0.1f;
-				if (event.key.code == sf::Keyboard::Key::N)
-					bAmount += 0.1f;
+				if (event.key.code == sf::Keyboard::Key::R){
+					rAmount -= 0.05f;
+					if(rAmount<0.f) rAmount=0.f;
+				}
+				if (event.key.code == sf::Keyboard::Key::T){
+					rAmount += 0.05f;
+					if(rAmount>1.0f) rAmount=1.0f;
+				}
+				if (event.key.code == sf::Keyboard::Key::G){
+					gAmount -= 0.05f;
+					if(gAmount<0.f) gAmount=0.f;
+				}
+				if (event.key.code == sf::Keyboard::Key::H){
+					gAmount += 0.05f;
+					if(gAmount>1.0f) gAmount=1.0f;
+				}
+				if (event.key.code == sf::Keyboard::Key::B){
+					bAmount -= 0.05f;
+					if(bAmount<0.f) bAmount=0.f;
+				}
+				if (event.key.code == sf::Keyboard::Key::N){
+					bAmount += 0.05f;
+					if(bAmount>1.0f) bAmount=1.0f;
+				}
 				if (event.key.code == sf::Keyboard::Key::Comma)
 				{
 					interiorHue -= 2;
@@ -153,14 +165,11 @@ int main(int argc, char* argv[])
 							break;
 						case 4:
 							colorMeth.setString("FIRE PALETTE");
-							break;
-						case 5:
-							colorMeth.setString("NORMAL MAP");
-							break;
+							break;;
 						default:
 							colorMeth.setString("SINGLE");
 					}
-					if (colorMethod > 5)
+					if (colorMethod > 4)
 						colorMethod = 0;
 				}
 				if (event.key.code == sf::Keyboard::Key::PageUp)
@@ -179,6 +188,27 @@ int main(int argc, char* argv[])
 					showControls = !showControls;
 				if (event.key.code == sf::Keyboard::Key::A)
 					animated = !animated;
+				if (event.key.code == sf::Keyboard::Key::X)
+					normalMap = !normalMap;
+				if (event.key.code == sf::Keyboard::Key::End){
+					lightHeight -= 0.1;
+					if(lightHeight<0.2) lightHeight=0.2;
+				}
+				if (event.key.code == sf::Keyboard::Key::Home){
+					lightHeight += 0.1;
+					if(lightHeight>4.0) lightHeight=4.0;
+				}
+				if (event.key.code == sf::Keyboard::Key::Insert){
+					angle--;
+					if(angle<0.0) angle=360.0;
+					v = exp(complexi*angle*2.0*doublepi/360.0);
+				}
+				if (event.key.code == sf::Keyboard::Key::Delete){
+					angle++;
+					if(angle>360.0) angle=0.0;
+					v = exp(complexi*angle*2.0*doublepi/360.0);
+				}
+
 			}
 			// Mouse Pressed
 			if (event.type == sf::Event::MouseButtonPressed)
